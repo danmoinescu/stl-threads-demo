@@ -19,7 +19,7 @@ class Dispatcher
         std::condition_variable work_sync_cond;
         std::queue<Work> work_queue;
     private:
-        // In C++ 20 we can use binary_semaphore or latch instead
+        // We can also use binary_semaphore or latch instead
         std::atomic_bool start_signal;
         bool _is_all_work_done = false;
         int total_work_units;
@@ -32,7 +32,7 @@ class Dispatcher
 
         void run();
         bool is_all_work_done() { return _is_all_work_done; }
-        bool is_ready() { return start_signal.load(); }
+        void wait_until_ready() { start_signal.wait(false); }
 
 
     private:
