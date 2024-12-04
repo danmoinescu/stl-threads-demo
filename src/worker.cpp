@@ -1,11 +1,12 @@
 #include "stl-threads-demo.hpp"
 
 
-void Worker::run()
+template <typename Work, typename Result>
+void Worker<Work, Result>::run()
 {
     while(true)
     {
-        std::pair<bool, long> work = get_work();
+        std::pair<bool, Work> work = get_work();
         if(!work.first)
         {
             break;
@@ -25,7 +26,8 @@ void Worker::run()
 }
 
 
-void Worker::purge_cache()
+template <typename Work, typename Result>
+void Worker<Work, Result>::purge_cache()
 {
     auto locked_global_results = global_results.get_instance();
     for(auto it = local_results.cbegin(); it != local_results.cend(); it++)
@@ -38,11 +40,12 @@ void Worker::purge_cache()
 }
 
 
-std::pair<bool, long> Worker::get_work()
+template <typename Work, typename Result>
+std::pair<bool, Work> Worker<Work, Result>::get_work()
 {
     bool is_available = true;
     std::unique_lock<std::mutex> work_sync_lock(dispatcher.work_sync_mutex);
-    long work_unit = 0;
+    Work work_unit(0);
     while(true)
     {
         if(dispatcher.work_queue.size() > 0)
@@ -69,9 +72,14 @@ std::pair<bool, long> Worker::get_work()
 }
 
 
-long Worker::do_work(long work_unit)
+template <typename Work, typename Result>
+Result Worker<Work, Result>::do_work(Work &work_unit)
 {
     std::this_thread::sleep_for(std::chrono::microseconds(
                 10 * (4 + work_unit % 3)));
-    return work_unit * 1000 + id;
+    return Result(work_unit * 1000 + id);
 }
+
+
+// explicit template instantiations to keep the linker happy
+template void Worker<long, long>::run();

@@ -1,7 +1,7 @@
 #include "stl-threads-demo.hpp"
 
-
-void Dispatcher::run()
+template<typename W>
+void Dispatcher<W>::run()
 {
     std::unique_lock<std::mutex> work_sync_lock(work_sync_mutex);
 
@@ -23,7 +23,8 @@ void Dispatcher::run()
 }
 
 
-bool Dispatcher::fill_work_queue()
+template<typename W>
+bool Dispatcher<W>::fill_work_queue()
 {
     bool have_more_work = true;
 #define MAX_WORK_QUEUE_SIZE 10 // Arbitrary value for demo purposes
@@ -41,3 +42,7 @@ bool Dispatcher::fill_work_queue()
     }
     return have_more_work;
 }
+
+
+// explicit template instantiations to keep the linker happy
+template void Dispatcher<long>::run();

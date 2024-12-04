@@ -23,7 +23,7 @@ int main(int argc, const char* const argv[])
         return 1;
     }
 
-    Dispatcher dispatcher = {
+    Dispatcher<long> dispatcher = {
         total_work_units
     };
     std::thread dispatcher_thread([&dispatcher] { dispatcher.run(); });
@@ -39,7 +39,7 @@ int main(int argc, const char* const argv[])
     {
         worker_threads.emplace_back([&, worker_id]
             {
-                Worker worker = {
+                Worker<long, long> worker = {
                     worker_id,
                     dispatcher,
                     global_results,
