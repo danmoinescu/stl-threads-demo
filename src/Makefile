@@ -23,7 +23,7 @@ $(binary): $(objects)
 	$(CXX) -o $@ $? $(LDFLAGS)
 
 
-.cpp.o: $(headers)
+%.o: %.cpp $(headers)
 #	The following implicit rule is applied automatically
 #	$(CXX) $(CFLAGS) -c $< -o $@
 
