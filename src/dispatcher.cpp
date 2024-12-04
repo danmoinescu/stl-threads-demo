@@ -19,7 +19,6 @@ void Dispatcher<W>::run()
             break;
         }
     }
-    printf("Dispatcher done\n");
 }
 
 

@@ -22,7 +22,6 @@ void Worker<Work, Result>::run()
     }
     // save remaining cached results
     purge_cache();
-    printf("Worker %d ending\n", id);
 }
 
 
