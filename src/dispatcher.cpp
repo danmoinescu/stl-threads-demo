@@ -5,10 +5,9 @@ void Dispatcher<W>::run()
 {
     std::unique_lock<std::mutex> work_sync_lock(work_sync_mutex);
 
-    /* Notify the main thread that we're ready (in C++ 20 we can add
-       a call to notify_one here).
-    */
+    // Notify any interested threads that we're ready
     start_signal.store(true);
+    start_signal.notify_all();
 
     while(true)
     {

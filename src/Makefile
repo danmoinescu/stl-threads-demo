@@ -10,7 +10,7 @@ headers = \
 objects = ${sources:.cpp=.o}
 
 CXX = g++
-CXXFLAGS = -O2 -Wall -Werror -std=c++17 -I utils/
+CXXFLAGS = -O2 -Wall -Werror -std=c++20 -I utils/
 LDFLAGS = -pthread
 
 binary=stl-threads-demo

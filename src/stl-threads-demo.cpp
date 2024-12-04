@@ -28,8 +28,8 @@ int main(int argc, const char* const argv[])
     };
     std::thread dispatcher_thread([&dispatcher] { dispatcher.run(); });
 
-    // Spin lock. In C++ 20 we can use wait instead
-    while(!dispatcher.is_ready()) {}
+    // Wait for the dispatcher to become ready before starting the workers
+    dispatcher.wait_until_ready();
 
     Synchronized<std::vector<long>> global_results;
     global_results->reserve(total_work_units);
