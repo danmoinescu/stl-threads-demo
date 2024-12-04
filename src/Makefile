@@ -3,11 +3,14 @@ sources = \
     stl-threads-demo.cpp \
     worker.cpp
 
-headers = stl-threads-demo.hpp
+headers = \
+    stl-threads-demo.hpp \
+    utils/synchronized.hpp
+
 objects = ${sources:.cpp=.o}
 
 CXX = g++
-CXXFLAGS = -O2 -Wall -Werror
+CXXFLAGS = -O2 -Wall -Werror -std=c++17 -I utils/
 LDFLAGS = -pthread
 
 binary=stl-threads-demo

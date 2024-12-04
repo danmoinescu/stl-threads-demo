@@ -26,7 +26,7 @@ void Dispatcher::run()
 bool Dispatcher::fill_work_queue()
 {
     bool have_more_work = true;
-#define MAX_WORK_QUEUE_SIZE 12 // Arbitrary value for demo purposes
+#define MAX_WORK_QUEUE_SIZE 10 // Arbitrary value for demo purposes
     while(work_queue.size() < MAX_WORK_QUEUE_SIZE)
     {
         if(is_work_available())
