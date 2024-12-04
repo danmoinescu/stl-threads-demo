@@ -33,14 +33,14 @@ int main(int argc, const char* const argv[])
 
     Synchronized<std::vector<long>> global_results;
     global_results->reserve(total_work_units);
-    std::vector<std::thread> workers;
-    workers.reserve(num_workers);
-    for(int wid=1; wid <= num_workers; ++wid)
+    std::vector<std::thread> worker_threads;
+    worker_threads.reserve(num_workers);
+    for(int worker_id=1; worker_id <= num_workers; ++worker_id)
     {
-        workers.emplace_back([&, wid]
+        worker_threads.emplace_back([&, worker_id]
             {
                 Worker worker = {
-                    wid,
+                    worker_id,
                     dispatcher,
                     global_results,
                 };
@@ -48,9 +48,9 @@ int main(int argc, const char* const argv[])
             });
     }
 
-    for(auto &worker: workers)
+    for(auto &worker_thread: worker_threads)
     {
-        worker.join();
+        worker_thread.join();
     }
     dispatcher_thread.join();
 
