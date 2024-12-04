@@ -8,6 +8,7 @@
 #include <thread>
 #include <utility>
 #include <vector>
+#include "synchronized.hpp"
 
 
 class Dispatcher
@@ -45,20 +46,17 @@ class Worker
     private:
         const int id;
         Dispatcher &dispatcher;
+        Synchronized<std::vector<long>> &global_results;
         std::vector<long> local_results;
-        std::vector<long> &global_results;
-        std::mutex &global_result_lock;
 
     public:
         Worker(
                 int id,
                 Dispatcher &dispatcher,
-                std::vector<long> &global_results,
-                std::mutex &global_result_lock) :
+                Synchronized<std::vector<long>> &global_results) :
             id(id),
             dispatcher(dispatcher),
-            global_results(global_results),
-            global_result_lock(global_result_lock)
+            global_results(global_results)
         {
 #define MAX_LOCAL_RESULTS 10 // Arbitrary value for demo purposes
             local_results.reserve(MAX_LOCAL_RESULTS);
@@ -69,4 +67,5 @@ class Worker
     private:
         std::pair<bool, long> get_work();
         long do_work(long work_unit);
+        void purge_cache();
 };

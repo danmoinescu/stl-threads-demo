@@ -11,9 +11,30 @@ void Worker::run()
             break;
         }
         dispatcher.work_sync_cond.notify_one();
-        do_work(work.second);
+        if(local_results.size() == local_results.capacity())
+        {
+            // local cache is full, save results into global location
+            purge_cache();
+        }
+        auto result = do_work(work.second);
+        local_results.push_back(result);
     }
+    // save remaining cached results
+    purge_cache();
     printf("Worker %d ending\n", id);
+}
+
+
+void Worker::purge_cache()
+{
+    auto locked_global_results = global_results.get_instance();
+    for(auto it = local_results.cbegin(); it != local_results.cend(); it++)
+    {
+        locked_global_results->insert(
+                locked_global_results->begin(),
+                *it);
+    }
+    local_results.clear();
 }
 
 
@@ -50,7 +71,7 @@ std::pair<bool, long> Worker::get_work()
 
 long Worker::do_work(long work_unit)
 {
-    printf("Worker %d got %ld\n", id, work_unit);
-    std::this_thread::sleep_for(std::chrono::microseconds(10));
+    std::this_thread::sleep_for(std::chrono::microseconds(
+                10 * (4 + work_unit % 3)));
     return work_unit * 1000 + id;
 }

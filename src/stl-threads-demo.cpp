@@ -5,10 +5,6 @@ int main()
 {
     const int num_work_units = 499; //TODO: take from argv
 
-    std::mutex global_result_lock;
-    std::vector<long> global_results;
-    global_results.reserve(num_work_units);
-
     Dispatcher dispatcher = {
         num_work_units
     };
@@ -17,6 +13,8 @@ int main()
     // Spin lock. In C++ 20 we can use wait instead
     while(!dispatcher.is_ready()) {}
 
+    Synchronized<std::vector<long>> global_results;
+    global_results->reserve(num_work_units);
 #define NUM_WORKERS 4
     std::vector<std::thread> workers;
     workers.reserve(NUM_WORKERS);
@@ -28,7 +26,6 @@ int main()
                     wid,
                     dispatcher,
                     global_results,
-                    global_result_lock,
                 };
                 worker.run();
             });
@@ -39,6 +36,14 @@ int main()
         worker.join();
     }
     dispatcher_thread.join();
-    printf("Main ending\n");
+
+    auto global_results_instance = global_results.get_instance();
+    printf("Got %ld result(s):", global_results->size());
+    for(auto result_iter = global_results_instance->cbegin();
+            result_iter != global_results_instance->cend(); result_iter++)
+    {
+        printf(" %ld", *result_iter);
+    }
+    printf("\n");
     return 0;
 }
